@@ -1,5 +1,6 @@
 # Mid-Term Project
-This repository cointains all the information you need to work on the Mid-Term project.
+This repository Contains the contents of the midterm project that Brian, Owen and Amir are working on
+- This repository was cloned from the Lighthouse-labs repository which can be found here https://github.com/lighthouse-labs/mid-term-project-I.git
 
 ## Hello and Welcome!!!
 
