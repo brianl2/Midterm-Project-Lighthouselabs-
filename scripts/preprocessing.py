@@ -4,6 +4,8 @@ sys.path.append("..")
 from scripts import database
 import pandas as pd
 
+### This is a placeholder untill we begin building a preprocessing pipeline
+
 
 FLIGHTS_QUERY =  """
                 SELECT * 
