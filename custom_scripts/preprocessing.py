@@ -15,7 +15,8 @@ PRIMARY_FEATURES =  """ fl_date,
                         crs_elapsed_time, 
                         dup, 
                         flights, 
-                        distance
+                        distance,
+                        arr_delay
                     """
 
 
