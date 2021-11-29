@@ -21,14 +21,26 @@ PRIMARY_FEATURES =  """ fl_date,
                         distance,
                         arr_delay
                     """
+PRIMARY_TEST_FEATURES = """ fl_date, 
+                        op_unique_carrier, 
+                        tail_num, 
+                        op_carrier_fl_num, 
+                        origin_airport_id, 
+                        dest_airport_id, 
+                        crs_dep_time,
+                        crs_arr_time, 
+                        crs_elapsed_time, 
+                        dup, 
+                        flights, 
+                        distance
+                    """
 
 
 
-
-def get_test_flights():
+def get_test_flights(features:str=PRIMARY_TEST_FEATURES) -> pd.DataFrame:
     """ Returns dataframe of flights from the first week of january 2020"""
-    return database.query(  """ 
-                            SELECT * 
+    return database.query(f""" 
+                            SELECT {features}
                                 FROM flights_test
                                 WHERE fl_date = ANY('{{2020-01-01, 2020-01-02, 2020-01-03, 2020-01-04, 2020-01-05, 2020-01-06, 2020-01-07}}')
                                 ;
