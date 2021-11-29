@@ -25,8 +25,8 @@ def run_test(X_train:pd.DataFrame, X_test:pd.DataFrame,
              y_train:pd.Series, y_test:pd.Series, 
              model: sklearn.base.BaseEstimator, notes:str="") -> sklearn.base.BaseEstimator:
     """
-    Fits and tests a model, saving the results and model pickle to local directory for record,
-    and returns model.
+    Fits and tests a model, saving the results and pickled model to local directory for
+    record keeping and returns model.
     
     Accepts optional notes argument for record keeping.
     
