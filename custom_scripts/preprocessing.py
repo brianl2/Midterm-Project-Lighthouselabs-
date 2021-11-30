@@ -61,7 +61,7 @@ def get_2019_january_data(features:str=PRIMARY_FEATURES) -> pd.DataFrame:
     """
     flights = database.query(f"""SELECT {features}
                              FROM flights
-                            WHERE SUBSTRING(fl_date,1,7) = '2019-01'
+                                WHERE fl_date = ANY('{{2019-01-01, 2019-01-02, 2019-01-03, 2019-01-04, 2019-01-05, 2019-01-06, 2019-01-07}}')
                              """)
     flight_numbers = pd.read_csv('../data/preprocessing/test_flight_numbers.csv')  
     #apply filters
