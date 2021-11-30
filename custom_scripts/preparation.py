@@ -47,12 +47,8 @@ def standardize_data(data_arr:list, scaler,
         numeric = scaler.transform(df[NUMERIC_FEATURES])
         categorical =  pd.get_dummies(df[CATEGORICAL_FEATURES])
         prepared_data_arr.append(pd.merge(numeric,categorical))
-    
-    
-    
-
-    
-    
+    return prepared_data_arr
+      
 
 
 def build_all_features(flight_data: pd.DataFrame) -> pd.DataFrame:
