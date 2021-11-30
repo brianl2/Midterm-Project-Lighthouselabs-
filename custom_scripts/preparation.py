@@ -27,7 +27,8 @@ NUMERIC_FEATURES = [    "fl_num_avg_arr_delay",
                         "fl_num_avg_air_time",
                         "fl_num_avg_late_aircraft_delay",
                         "fl_num_avg_total_add_gtime",
-                        "fl_num_avg_longest_add_gtime"] 
+                        "fl_num_avg_longest_add_gtime",
+                        'Severity', ] 
 
 CATEGORICAL_FEATURES =[ "day_of_year", 
                         "day_of_week"]                              
@@ -35,7 +36,14 @@ CATEGORICAL_FEATURES =[ "day_of_year",
 OTHER_FEATURES = ['arr_time_sin',
                   'arr_time_cos',
                   'dep_time_sin',
-                  'dep_time_cos']
+                  'dep_time_cos',
+                  'Type_Cold', 
+                  'Type_Fog',
+                  'Type_Hail',
+                  'Type_Precipitation',
+                  'Type_Rain',
+                  'Type_Snow',
+                  'Type_Storm']
 
 def get_train_test_split(X:pd.DataFrame, y:pd.Series)-> list:
     """ Returns train_test_split using consntant values for test size and random state"""
