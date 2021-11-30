@@ -9,20 +9,20 @@ TEST_SIZE = 0.3
 
 NUMERIC_FEATURES = [    "fl_num_avg_arr_delay",
                         "fl_num_avg_dep_delay",
-                        "fl_num_carrier_delay",
-                        "fl_num_weather_delay",
+                        "fl_num_avg_carrier_delay",
+                        "fl_num_avg_weather_delay",
                         "fl_num_avg_nas_delay",
-                        "fl_num_security_delay",
-                        "fl_num_taxi_out",
-                        "fl_num_wheels_off", 
-                        "fl_num_wheels_on", 
-                        "fl_num_taxi_in", 
-                        "fl_num_crs_elapsed_time",
-                        "fl_num_actual_elapsed_time",
-                        "fl_num_air_time",
-                        "fl_num_late_aircraft_delay",
-                        "fl_num_total_add_gtime",
-                        "fl_num_longest_add_gtime"] 
+                        "fl_num_avg_security_delay",
+                        "fl_num_avg_taxi_out",
+                        "fl_num_avg_wheels_off", 
+                        "fl_num_avg_wheels_on", 
+                        "fl_num_avg_taxi_in", 
+                        "fl_num_avg_crs_elapsed_time",
+                        "fl_num_avg_actual_elapsed_time",
+                        "fl_num_avg_air_time",
+                        "fl_num_avg_late_aircraft_delay",
+                        "fl_num_avg_total_add_gtime",
+                        "fl_num_avg_longest_add_gtime"] 
 CATEGORICAL_FEATURES =[]                              
 
 
@@ -36,17 +36,20 @@ def standardize_data(data_arr:list, scaler,
     """ Requires list of dataframe and scaler.  Optional arguments numeric_features and
         categorical_features for selecting specific features to standardize.
         returns list of dataframes with just categorical dummies
-        and numeric features scaled to the first dataframe in the list"""
+        and numeric features scaled to the first dataframe in the list
+        Example: 
+            standard_df_arr = standardize_data([df1,df2,df3], StandardScaler())"""
     try:
-        scaler.fit(for_scaling = data_arr[0][NUMERIC_FEATURES])
+        scaler.fit(data_arr[0][numeric_features])
     except Exception as e:
-        print(f'Unable to fit scaler:\n{e}')
+        print(f'Unable to fit scaler, are Dataframes given in list?:\n{e}')
         return None
-    prepared_data_arr = ()
+    prepared_data_arr = []
     for df in data_arr:
-        numeric = scaler.transform(df[NUMERIC_FEATURES])
-        categorical =  pd.get_dummies(df[CATEGORICAL_FEATURES])
-        prepared_data_arr.append(pd.merge(numeric,categorical))
+        numeric = pd.DataFrame(scaler.transform(df[numeric_features]), columns=numeric_features)
+        prepared_data_arr.append(numeric)
+        # categorical =  pd.get_dummies(df[categorical_features])
+        # prepared_data_arr.append(pd.merge(numeric,categorical))
     return prepared_data_arr
       
 

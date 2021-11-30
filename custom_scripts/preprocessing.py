@@ -23,21 +23,21 @@ def create_average_table(feature,prefix):
     table = database.query(f"""
                             SELECT  {feature},
                                     AVG(dep_delay) AS "{prefix}_avg_dep_delay", 
-                                    AVG(taxi_out) AS "{prefix}_taxi_out",
-                                    AVG(wheels_off) AS "{prefix}_wheels_off", 
-                                    AVG(wheels_on) AS "{prefix}_wheels_on", 
-                                    AVG(taxi_in) AS "{prefix}_taxi_in", 
+                                    AVG(taxi_out) AS "{prefix}_avg_taxi_out",
+                                    AVG(wheels_off) AS "{prefix}_avg_wheels_off", 
+                                    AVG(wheels_on) AS "{prefix}_avg_wheels_on", 
+                                    AVG(taxi_in) AS "{prefix}_avg_taxi_in", 
                                     AVG(arr_delay) AS "{prefix}_avg_arr_delay",
-                                    AVG(crs_elapsed_time) AS "{prefix}_crs_elapsed_time",
-                                    AVG(actual_elapsed_time) AS "{prefix}_actual_elapsed_time",
-                                    AVG(air_time) AS "{prefix}_air_time",
-                                    AVG(carrier_delay) AS "{prefix}_carrier_delay",
-                                    AVG(weather_delay) AS "{prefix}_weather_delay",
+                                    AVG(crs_elapsed_time) AS "{prefix}_avg_crs_elapsed_time",
+                                    AVG(actual_elapsed_time) AS "{prefix}_avg_actual_elapsed_time",
+                                    AVG(air_time) AS "{prefix}_avg_air_time",
+                                    AVG(carrier_delay) AS "{prefix}_avg_carrier_delay",
+                                    AVG(weather_delay) AS "{prefix}_avg_weather_delay",
                                     AVG(nas_delay) AS "{prefix}_avg_nas_delay", 
-                                    AVG(security_delay) AS "{prefix}_security_delay",
-                                    AVG(late_aircraft_delay) AS "{prefix}_late_aircraft_delay",
-                                    AVG(total_add_gtime) AS "{prefix}_total_add_gtime",
-                                    AVG(longest_add_gtime) AS "{prefix}_longest_add_gtime"                                      
+                                    AVG(security_delay) AS "{prefix}_avg_security_delay",
+                                    AVG(late_aircraft_delay) AS "{prefix}_avg_late_aircraft_delay",
+                                    AVG(total_add_gtime) AS "{prefix}_avg_total_add_gtime",
+                                    AVG(longest_add_gtime) AS "{prefix}_avg_longest_add_gtime"                                      
                                 FROM flights
                                 GROUP BY {feature};
                             """)
