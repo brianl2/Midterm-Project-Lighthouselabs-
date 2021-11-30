@@ -37,7 +37,9 @@ def get_train_test_split(X:pd.DataFrame, y:pd.Series)-> list:
 
 
 def standardize_data(data_arr:list, scaler, 
-        numeric_features:list = NUMERIC_FEATURES, categorical_features:list = CATEGORICAL_FEATURES) -> list:
+        numeric_features:list = NUMERIC_FEATURES, 
+        categorical_features:list = CATEGORICAL_FEATURES, 
+        other_features:list = OTHER_FEATURES) -> list:
     """ Requires list of dataframe and scaler.  Optional arguments numeric_features and
         categorical_features for selecting specific features to standardize.
         returns list of dataframes with just categorical dummies
@@ -45,19 +47,24 @@ def standardize_data(data_arr:list, scaler,
         Example: 
             standard_df_arr = standardize_data([df1,df2,df3], StandardScaler())"""
     try:
-        scaler.fit(data_arr[0][numeric_features])
+        if len(numeric_features) > 0:
+            fitting_data = data_arr[0]
+            scaler.fit(fitting_data[numeric_features])
     except Exception as e:
         print(f'Unable to fit scaler, are Dataframes given in list?:\n{e}')
         return None
     prepared_data_arr = []
     for df in data_arr:
-        numeric = pd.DataFrame(scaler.transform(df[numeric_features]), columns=numeric_features)
-        prepared_data_arr.append(numeric)
-        # categorical =  pd.get_dummies(df[categorical_features])
-        # prepared_data_arr.append(pd.merge(numeric,categorical))
+        segments = []
+        if len(other_features) > 0:
+            segments.append(df[other_features])
+        if len(numeric_features) > 0:
+            segments.append(pd.DataFrame(scaler.transform(df[numeric_features]), columns=numeric_features, index=df.index))   
+        if len(categorical_features) > 0: 
+            segments.append(pd.get_dummies(df[categorical_features]))
+        prepared_data_arr.append(pd.concat(segments,1))
     return prepared_data_arr
       
-
 
 def build_all_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     """ Returns dataframe with all features added. """
