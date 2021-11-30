@@ -51,7 +51,7 @@ def get_test_flights(features:str=PRIMARY_TEST_FEATURES) -> pd.DataFrame:
                                 WHERE fl_date = ANY('{{2020-01-01, 2020-01-02, 2020-01-03, 2020-01-04, 2020-01-05, 2020-01-06, 2020-01-07}}')
                                 ;
                             """)
-def get_2019_january_data(features:str=PRIMARY_FEATURES) -> pd.DataFrame:
+def get_train_flights(features:str=PRIMARY_FEATURES) -> pd.DataFrame:
     """ 
     Returns DataFrame of all flights from January 2019
     
