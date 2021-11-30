@@ -1,8 +1,13 @@
 ### Pipeline script for preparing data drior to model testing
+from datetime import datetime
+import sys
+sys.path.append("..")
+
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
 import math
+from custom_scripts import weather
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.3
@@ -72,6 +77,7 @@ def build_all_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     flight_data = build_historic_average_features(flight_data)
     flight_data = build_time_features(flight_data)
     flight_data = build_day_features(flight_data)
+    flight_data = build_weather_features(flight_data)
     return flight_data
 
 
@@ -112,3 +118,49 @@ def build_day_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     flight_data['day_of_year'] = pd.to_datetime(flight_data['fl_date']).dt.dayofyear
     flight_data['day_of_week'] = pd.to_datetime(flight_data['fl_date']).dt.dayofweek
     return flight_data
+
+
+def build_weather_features(flight_data: pd.DataFrame) -> pd.DataFrame:
+    """ Returns dataframe with added weather features """
+    flight_data = flight_data.copy()
+    # Read the relevant weather_all.csv into a dataframe
+    weather_table = pd.read_csv('../data/Weather_data/weather_all.csv')
+    weather_data = weather.get_weather( weather_table, 
+                                        flight_data['fl_date'].min(), 
+                                        flight_data['fl_date'].max())
+    #renaming column to merge dataframes
+    weather_data = weather_data.rename(columns = {'iata_code':'origin', 'StartTime(UTC)':'fl_date'})
+    # Drop duplicates in the data frame
+    weather_data = weather_data.drop_duplicates(['origin','fl_date','Severity','Type'])
+    #Create dummies
+    dummy_weather = weather_data.copy()
+    # combine the UNK severity type with Other, simplifies, may also need the same code to convert NaNs
+    dummy_weather = dummy_weather.replace('UNK','Other')
+    severity_nums = {"Severity": {"Sunny": 0, "Other": 1, "Light": 2, "Moderate": 3, "Heavy": 4, "Severe": 5}} 
+    dummy_weather = dummy_weather.replace(severity_nums)
+    #Get dummies for the Type of weather
+    dummy_weather = pd.get_dummies(dummy_weather,columns = ['Type'])
+    #Merging with Test data to get sample final results
+    flight_data = flight_data.merge(dummy_weather , how = 'left', on = ['origin', 'fl_date'])
+    flight_data['Type_Rain'] = flight_data['Type_Rain'].fillna(0)
+    return flight_data
+    
+# #For testing purposes, importing a file from training data (not on github)
+# test = pd.read_csv('fl_samples.csv')
+# weather = pd.read_csv('../../data/Weather_data/weather_all.csv')
+# #Plug and play example, changing dates
+# df_weather = weather.get_weather(weather,'2019-01-01','2019-01-31')
+# df_weather = df_weather.rename(columns = {'iata_code':'origin', 'StartTime(UTC)':'fl_date'})
+# df_weather = df_weather.drop_duplicates(['origin','fl_date','Severity','Type'])
+
+# test.merge(df_weather , how = 'left', on = ['origin', 'fl_date'])
+# df_dummy_weather = df_weather.copy()
+# df_dummy_weather = df_dummy_weather.replace('UNK', 'Other')
+# #replace severity as ranking, leave 0 for when you have NaN's as "Sunny" - Will be useful with NaNs
+# severity_nums = {"Severity": {"Sunny": 0, "Other": 1, "Light": 2, "Moderate": 3, "Heavy": 4, "Severe": 5}} 
+# df_dummy_weather = df_dummy_weather.replace(severity_nums)
+# #Get dummies for the Type of weather
+# df_dummy_final = pd.get_dummies(df_dummy_weather,columns = ['Type'])
+# #Merging with Test data to get sample final results
+# df1 = test.merge(df_dummy_final , how = 'left', on = ['origin', 'fl_date'])
+# df1['Type_Rain'] = df1['Type_Rain'].fillna(0)
