@@ -24,7 +24,8 @@ NUMERIC_FEATURES = [    "fl_num_avg_arr_delay",
                         "fl_num_avg_total_add_gtime",
                         "fl_num_avg_longest_add_gtime"] 
 
-CATEGORICAL_FEATURES =[]                              
+CATEGORICAL_FEATURES =[ "day_of_year", 
+                        "day_of_week"]                              
 
 OTHER_FEATURES = ['arr_time_sin',
                   'arr_time_cos',
@@ -61,7 +62,7 @@ def standardize_data(data_arr:list, scaler,
         if len(numeric_features) > 0:
             segments.append(pd.DataFrame(scaler.transform(df[numeric_features]), columns=numeric_features, index=df.index))   
         if len(categorical_features) > 0: 
-            segments.append(pd.get_dummies(df[categorical_features]))
+            segments.append(pd.get_dummies(df[categorical_features].astype(str)))
         prepared_data_arr.append(pd.concat(segments,1))
     return prepared_data_arr
       
@@ -70,16 +71,18 @@ def build_all_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     """ Returns dataframe with all features added. """
     flight_data = build_historic_average_features(flight_data)
     flight_data = build_time_features(flight_data)
+    flight_data = build_day_features(flight_data)
     return flight_data
 
 
-def build_historic_average_features(flight_data):
+def build_historic_average_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     """ Returns dataframe with added historic average features """
     average_delays = pd.read_csv('../data/preprocessing/averages_by_fl_num.csv')
     return pd.merge(flight_data.copy(), average_delays, on='op_carrier_fl_num')
 
 
-def build_time_features(flight_data):
+def build_time_features(flight_data: pd.DataFrame) -> pd.DataFrame:
+    """ Returns dataframe with added time sin/cos features """
     flight_data = flight_data.copy()
     ### pad values
     flight_data['arrival_time'] = flight_data['crs_arr_time'].astype(str).str.zfill(4)
@@ -101,4 +104,11 @@ def build_time_features(flight_data):
     flight_data['dep_time_cos'] = np.cos(flight_data['departure_time'])
     ### drop placeholder features
     flight_data.drop(['arrival_time','departure_time'],1,inplace=True)
+    return flight_data
+
+def build_day_features(flight_data: pd.DataFrame) -> pd.DataFrame:
+    """ Returns dataframe with added day of year and day of week features """
+    flight_data = flight_data.copy()
+    flight_data['day_of_year'] = pd.to_datetime(flight_data['fl_date']).dt.dayofyear
+    flight_data['day_of_week'] = pd.to_datetime(flight_data['fl_date']).dt.dayofweek
     return flight_data
