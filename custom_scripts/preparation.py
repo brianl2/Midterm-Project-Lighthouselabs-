@@ -1,7 +1,6 @@
 ### Pipeline script for preparing data drior to model testing
-from typing import Sequence
-from pandas.core.arrays import categorical
 from sklearn.model_selection import train_test_split
+import numpy as np
 import pandas as pd
 import math
 
@@ -62,14 +61,14 @@ def standardize_data(data_arr:list, scaler,
 
 def build_all_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     """ Returns dataframe with all features added. """
-    flight_data = build_all_features(flight_data)
+    flight_data = build_historic_average_features(flight_data)
     flight_data = build_time_features(flight_data)
     return flight_data
 
 
 def build_historic_average_features(flight_data):
     """ Returns dataframe with added historic average features """
-    average_delays = pd.read_csv('../../data/preprocessing/averages_by_fl_num.csv')
+    average_delays = pd.read_csv('../data/preprocessing/averages_by_fl_num.csv')
     return pd.merge(flight_data.copy(), average_delays, on='op_carrier_fl_num')
 
 
