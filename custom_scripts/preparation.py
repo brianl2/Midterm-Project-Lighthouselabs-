@@ -151,6 +151,13 @@ def build_weather_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     #Merging with Test data to get sample final results
     flight_data = flight_data.merge(dummy_weather , how = 'left', on = ['origin', 'fl_date'])
     flight_data['Type_Rain'] = flight_data['Type_Rain'].fillna(0)
+    flight_data['Type_Hail'] = flight_data['Type_Hail'].fillna(0)
+    flight_data['Type_Cold'] = flight_data['Type_Cold'].fillna(0)
+    flight_data['Type_Fog'] = flight_data['Type_Fog'].fillna(0)
+    flight_data['Type_Snow'] = flight_data['Type_Snow'].fillna(0)
+    flight_data['Type_Storm'] = flight_data['Type_Storm'].fillna(0)
+    flight_data['Type_Precipitation'] = flight_data['Type_Precipitation'].fillna(0)
+    flight_data['Severity'] = flight_data['Severity'].fillna(0)
     return flight_data
     
 # #For testing purposes, importing a file from training data (not on github)
