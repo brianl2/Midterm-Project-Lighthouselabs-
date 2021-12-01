@@ -28,7 +28,9 @@ NUMERIC_FEATURES = [    "fl_num_avg_arr_delay",
                         "fl_num_avg_late_aircraft_delay",
                         "fl_num_avg_total_add_gtime",
                         "fl_num_avg_longest_add_gtime",
-                        'Severity', ] 
+                        'Severity', 
+                        'distance',
+                        'crs_elapsed_time'] 
 
 CATEGORICAL_FEATURES =[ "day_of_year", 
                         "day_of_week"]                              
