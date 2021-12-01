@@ -98,6 +98,9 @@ def build_historic_average_features(flight_data: pd.DataFrame) -> pd.DataFrame:
 def build_time_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     """ Returns dataframe with added time sin/cos features """
     flight_data = flight_data.copy()
+    ### change 2400 to 0000 to avoid nans
+    flight_data['crs_arr_time'].replace({2400:0000},inplace=True)
+    flight_data['crs_dep_time'].replace({2400:0000},inplace=True)
     ### pad values
     flight_data['arrival_time'] = flight_data['crs_arr_time'].astype(str).str.zfill(4)
     flight_data['departure_time'] = flight_data['crs_dep_time'].astype(str).str.zfill(4)
