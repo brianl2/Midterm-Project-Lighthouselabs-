@@ -39,13 +39,13 @@ OTHER_FEATURES = ['arr_time_sin',
                   'arr_time_cos',
                   'dep_time_sin',
                   'dep_time_cos',
-                  'Type_Cold', 
-                  'Type_Fog',
-                  'Type_Hail',
-                  'Type_Precipitation',
-                  'Type_Rain',
-                  'Type_Snow',
-                  'Type_Storm']
+                  'Cold', 
+                  'Fog',
+                  'Hail',
+                  'Precipitation',
+                  'Rain',
+                  'Snow',
+                  'Storm']
 
 def get_train_test_split(X:pd.DataFrame, y:pd.Series)-> list:
     """ Returns train_test_split using consntant values for test size and random state"""
