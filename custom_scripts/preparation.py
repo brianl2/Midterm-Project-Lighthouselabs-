@@ -30,22 +30,47 @@ NUMERIC_FEATURES = [    "fl_num_avg_arr_delay",
                         "fl_num_avg_longest_add_gtime",
                         'Severity', 
                         'distance',
-                        'crs_elapsed_time'] 
+                        'crs_elapsed_time',
+                        'origin_cold', 
+                        'origin_fog',
+                        'origin_hail',
+                        'origin_precipitation',
+                        'origin_rain',
+                        'origin_snow',
+                        'origin_storm',
+                        'dest_cold', 
+                        'dest_fog',
+                        'dest_hail',
+                        'dest_precipitation',
+                        'dest_rain',
+                        'dest_snow',
+                        'dest_storm'] 
 
 CATEGORICAL_FEATURES =[ "day_of_year", 
                         "day_of_week"]                              
 
-OTHER_FEATURES = ['arr_time_sin',
-                  'arr_time_cos',
-                  'dep_time_sin',
-                  'dep_time_cos',
-                  'Cold', 
-                  'Fog',
-                  'Hail',
-                  'Precipitation',
-                  'Rain',
-                  'Snow',
-                  'Storm']
+OTHER_FEATURES = [      'arr_time_sin',
+                        'arr_time_cos',
+                        'dep_time_sin',
+                        'dep_time_cos',]
+
+SPARSE_AVERAGE_FEATURES = [ "fl_num_avg_arr_delay",
+                            "fl_num_avg_dep_delay",
+                            "fl_num_avg_carrier_delay",
+                            # "fl_num_avg_weather_delay",
+                            # "fl_num_avg_nas_delay",
+                            # "fl_num_avg_security_delay",
+                            "fl_num_avg_taxi_out",
+                            # "fl_num_avg_wheels_off", 
+                            # "fl_num_avg_wheels_on", 
+                            # "fl_num_avg_taxi_in", 
+                            # "fl_num_avg_crs_elapsed_time",
+                            # "fl_num_avg_actual_elapsed_time",
+                            # "fl_num_avg_air_time",
+                            "fl_num_avg_late_aircraft_delay"
+                            # "fl_num_avg_total_add_gtime",
+                            # "fl_num_avg_longest_add_gtime",
+                            ] 
 
 def get_train_test_split(X:pd.DataFrame, y:pd.Series)-> list:
     """ Returns train_test_split using consntant values for test size and random state"""
@@ -62,6 +87,10 @@ def standardize_data(data_arr:list, scaler,
         and numeric features scaled to the first dataframe in the list
         Example: 
             standard_df_arr = standardize_data([df1,df2,df3], StandardScaler())"""
+    ### Clean feature lists to not look for features that are absent
+    numeric_features  = [f for f in numeric_features if f in data_arr[0].columns]
+    categorical_features  = [f for f in categorical_features if f in data_arr[0].columns]
+    other_features  = [f for f in other_features if f in data_arr[0].columns]
     try:
         if len(numeric_features) > 0:
             fitting_data = data_arr[0]
@@ -82,18 +111,20 @@ def standardize_data(data_arr:list, scaler,
     return prepared_data_arr
       
 
-def build_all_features(flight_data: pd.DataFrame) -> pd.DataFrame:
+def build_all_features(flight_data: pd.DataFrame, sparse:bool=False) -> pd.DataFrame:
     """ Returns dataframe with all features added. """
-    flight_data = build_historic_average_features(flight_data)
+    flight_data = build_historic_average_features(flight_data, sparse)
     flight_data = build_time_features(flight_data)
-    flight_data = build_day_features(flight_data)
+    flight_data = build_day_features(flight_data, sparse)
     flight_data = build_weather_features(flight_data)
     return flight_data
 
 
-def build_historic_average_features(flight_data: pd.DataFrame) -> pd.DataFrame:
+def build_historic_average_features(flight_data: pd.DataFrame, sparse:bool=False) -> pd.DataFrame:
     """ Returns dataframe with added historic average features """
     average_delays = pd.read_csv('../data/preprocessing/averages_by_fl_num.csv')
+    if sparse:
+        average_delays = pd.concat([average_delays[SPARSE_AVERAGE_FEATURES],average_delays['op_carrier_fl_num']],1)
     return pd.merge(flight_data.copy(), average_delays, on='op_carrier_fl_num')
 
 
@@ -125,10 +156,11 @@ def build_time_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     flight_data.drop(['arrival_time','departure_time'],1,inplace=True)
     return flight_data
 
-def build_day_features(flight_data: pd.DataFrame) -> pd.DataFrame:
+def build_day_features(flight_data: pd.DataFrame, sparse:bool=False) -> pd.DataFrame:
     """ Returns dataframe with added day of year and day of week features """
     flight_data = flight_data.copy()
-    flight_data['day_of_year'] = pd.to_datetime(flight_data['fl_date']).dt.dayofyear
+    if not sparse:
+        flight_data['day_of_year'] = pd.to_datetime(flight_data['fl_date']).dt.dayofyear
     flight_data['day_of_week'] = pd.to_datetime(flight_data['fl_date']).dt.dayofweek
     return flight_data
 
@@ -141,31 +173,68 @@ def build_weather_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     weather_table = weather_table[weather_table['Type'].notna()]
     weather_table.drop('AirportCode', 1, inplace= True)
     weather_table.rename(columns={"StartTime(UTC)": 'fl_date', 
-                                'iata_code': 'origin'}, inplace= True)
+                            'iata_code': 'origin'}, inplace= True)
     # Build and merge severity table
-    severity = weather_table.replace({"Severity": { "Sunny": 0, 
-                                                    "Other": 1, 
-                                                    "Light": 2, 
-                                                    "Moderate": 3, 
-                                                    "Heavy": 4, 
-                                                    "Severe": 5, 
-                                                    "UNK": 1, 
-                                                    np.nan: 1   }} )
-    severity.drop('Type',1,inplace=True)
-    severity
-    severity = severity.sort_values('Severity', ascending=False).drop_duplicates(['origin','fl_date'])
-    flight_data = pd.merge(flight_data, severity, how='left')
-    flight_data['Severity'] = flight_data['Severity'].fillna(0)
-    # Build and merge weather tables
-    weather_table = weather_table.drop('Severity', 1)
-    weather_table['Type'].unique()    
+    weather_table = weather_table.replace({"Severity": { "Sunny": 0, 
+                                                "Other": 1, 
+                                                "Light": 2, 
+                                                "Moderate": 3, 
+                                                "Heavy": 4, 
+                                                "Severe": 5, 
+                                                "UNK": 1, 
+                                                np.nan: 1   }} )
     for weather in weather_table['Type'].unique():
-        table = weather_table[weather_table['Type'] == weather].drop_duplicates(['origin','fl_date','Type'])
-        table['Type'] = 1
-        table.rename(columns={"Type": weather}, inplace=True)
-        flight_data = pd.merge(flight_data, table, how='left')
-        flight_data[weather] =flight_data[weather].fillna(0)
+    #Remove duplicates
+        table = weather_table[weather_table['Type'] == weather].sort_values('Severity', ascending=False).drop_duplicates(['origin','fl_date','Type'])
+        f1 = 'origin_'+weather.lower()
+        f2 = 'dest_'+weather.lower()
+        #Origin weather
+        table.rename(columns={"Severity": f1}, inplace=True)
+        flight_data = pd.merge(flight_data, table[[f1,'origin','fl_date']], how='left')
+        flight_data[f1] = flight_data[f1].fillna(0)
+        #Destination weather
+        table.rename(columns={"origin": 'dest', f1: f2}, inplace=True)
+        flight_data = pd.merge(flight_data, table[[f2,'dest','fl_date']], how='left')
+        flight_data[f2] = flight_data[f2].fillna(0)
     return flight_data
+    
+    
+    
+    
+    
+    # """ Returns dataframe with added weather features """
+    # flight_data = flight_data.copy()
+    # # Read the relevant weather_all.csv into a dataframe
+    # weather_table = pd.read_csv('../data/Weather_data/weather_all.csv')
+    # # Clean table
+    # weather_table = weather_table[weather_table['Type'].notna()]
+    # weather_table.drop('AirportCode', 1, inplace= True)
+    # weather_table.rename(columns={"StartTime(UTC)": 'fl_date', 
+    #                             'iata_code': 'origin'}, inplace= True)
+    # # Build and merge severity table
+    # severity = weather_table.replace({"Severity": { "Sunny": 0, 
+    #                                                 "Other": 1, 
+    #                                                 "Light": 2, 
+    #                                                 "Moderate": 3, 
+    #                                                 "Heavy": 4, 
+    #                                                 "Severe": 5, 
+    #                                                 "UNK": 1, 
+    #                                                 np.nan: 1   }} )
+    # severity.drop('Type',1,inplace=True)
+    # severity
+    # severity = severity.sort_values('Severity', ascending=False).drop_duplicates(['origin','fl_date'])
+    # flight_data = pd.merge(flight_data, severity, how='left')
+    # flight_data['Severity'] = flight_data['Severity'].fillna(0)
+    # # Build and merge weather tables
+    # weather_table = weather_table.drop('Severity', 1)
+    # weather_table['Type'].unique()    
+    # for weather in weather_table['Type'].unique():
+    #     table = weather_table[weather_table['Type'] == weather].drop_duplicates(['origin','fl_date','Type'])
+    #     table['Type'] = 1
+    #     table.rename(columns={"Type": weather}, inplace=True)
+    #     flight_data = pd.merge(flight_data, table, how='left')
+    #     flight_data[weather] =flight_data[weather].fillna(0)
+    # return flight_data
 
 # def build_weather_features(flight_data: pd.DataFrame) -> pd.DataFrame:
 #     """ Returns dataframe with added weather features """
