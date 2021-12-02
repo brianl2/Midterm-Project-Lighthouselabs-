@@ -8,10 +8,11 @@ import numpy as np
 import pandas as pd
 import math
 from custom_scripts import weather
-
+### splitting parameters
 RANDOM_STATE = 42
 TEST_SIZE = 0.3
-
+### Selected features, add or remove from these lists to change the features returned from script
+### Numeric features to be scaled during standardization
 NUMERIC_FEATURES = [    "fl_num_avg_arr_delay",
                         "fl_num_avg_dep_delay",
                         "fl_num_avg_late_aircraft_delay",
@@ -43,9 +44,9 @@ NUMERIC_FEATURES = [    "fl_num_avg_arr_delay",
                         'dest_rain',
                         'dest_snow',
                         'dest_storm' ] 
-
+### Features to be hot encoded during standardization
 CATEGORICAL_FEATURES =[  "day_of_week"]                              
-
+### Features that will be kept but unchanged during standardization
 OTHER_FEATURES = [      'arr_time_sin',
                         'arr_time_cos',
                         'dep_time_sin',
@@ -99,7 +100,9 @@ def build_all_features(flight_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_historic_average_features(flight_data: pd.DataFrame) -> pd.DataFrame:
-    """ Returns dataframe with added historic average features """
+    """ Returns dataframe with added historic average features 
+        Require op_carrier_fl_num, tail_num, op_unique_carrier
+        dest, origin to be present"""
     fl_num = pd.read_csv('../data/preprocessing/averages_by_fl_num.csv')
     tail = pd.read_csv('../data/preprocessing/averages_by_tail_num.csv')
     carrier = pd.read_csv('../data/preprocessing/averages_by_carrier.csv')
@@ -131,7 +134,8 @@ def build_historic_average_features(flight_data: pd.DataFrame) -> pd.DataFrame:
   
 
 def build_time_features(flight_data: pd.DataFrame) -> pd.DataFrame:
-    """ Returns dataframe with added time sin/cos features """
+    """ Returns dataframe with added time sin/cos features
+        Require crs_arr_time and crs_dep_time to be present"""
     flight_data = flight_data.copy()
     ### change 2400 to 0000 to avoid nans
     flight_data['crs_arr_time'].replace({2400:0000},inplace=True)
@@ -159,13 +163,15 @@ def build_time_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     return flight_data
 
 def build_day_features(flight_data: pd.DataFrame) -> pd.DataFrame:
-    """ Returns dataframe with added calendar features """
+    """ Returns dataframe with added calendar features
+        Requires fl_date to be present"""
     #TODO: add "is_holiday" feature
     flight_data['day_of_week'] = pd.to_datetime(flight_data['fl_date']).dt.dayofweek
     return flight_data
 
 def build_weather_features(flight_data: pd.DataFrame) -> pd.DataFrame:
-    """ Returns dataframe with added weather features """
+    """ Returns dataframe with added weather features
+        Requires fl_date, origin, and dest to be present"""
     flight_data = flight_data.copy()
     weather_table = pd.read_csv('../data/Weather_data/weather_all.csv')
     # Clean table
