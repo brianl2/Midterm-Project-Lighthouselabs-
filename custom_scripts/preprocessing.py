@@ -19,7 +19,8 @@ PRIMARY_TEST_FEATURES = """ fl_date,
                     """
 PRIMARY_FEATURES =  PRIMARY_TEST_FEATURES+',arr_delay'
 
-def create_average_table(feature,prefix):
+def create_average_table(feature:str,prefix:str, min_arr_delay:float, max_arr_delay:float) -> pd.DataFrame:
+    """Create a table of average features from database"""
     table = database.query(f"""
                             SELECT  {feature},
                                     AVG(dep_delay) AS "{prefix}_avg_dep_delay", 
@@ -39,6 +40,8 @@ def create_average_table(feature,prefix):
                                     AVG(total_add_gtime) AS "{prefix}_avg_total_add_gtime",
                                     AVG(longest_add_gtime) AS "{prefix}_avg_longest_add_gtime"                                      
                                 FROM flights
+                                WHERE arr_delay <= {max_arr_delay}
+                                AND arr_delay >= {min_arr_delay}
                                 GROUP BY {feature};
                             """)
     return table
