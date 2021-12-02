@@ -15,7 +15,8 @@ PRIMARY_TEST_FEATURES = """ fl_date,
                         crs_dep_time,
                         crs_arr_time, 
                         crs_elapsed_time, 
-                        distance
+                        distance, 
+                        tail_num
                     """
 PRIMARY_FEATURES =  PRIMARY_TEST_FEATURES+',arr_delay'
 
@@ -54,17 +55,17 @@ def get_test_flights(features:str=PRIMARY_TEST_FEATURES) -> pd.DataFrame:
                                 WHERE fl_date = ANY('{{2020-01-01, 2020-01-02, 2020-01-03, 2020-01-04, 2020-01-05, 2020-01-06, 2020-01-07}}')
                                 ;
                             """)
-def get_train_flights(features:str=PRIMARY_FEATURES) -> pd.DataFrame:
+def get_train_flights(features:str=PRIMARY_FEATURES, min_arr_delay:float=-60, max_arr_delay:float=150) -> pd.DataFrame:
     """ 
-    Returns DataFrame of all flights from first week of January 2019
-    
-    Accepts an optional argument for specific features to query in string format
-    
-        Example: get_train_flights("fl_date,tail_num,distance") 
+    Returns DataFrame of all flights from first and last week of 2019
+    Filtering outliers by min/max arr_delay
+    Optional arguments for selecting features to query, or changing the outlier cutoff
     """
     flights = database.query(f"""SELECT {features}
-                             FROM flights
-                                WHERE fl_date = ANY('{{2019-01-01, 2019-01-02, 2019-01-03, 2019-01-04, 2019-01-05, 2019-01-06, 2019-01-07}}')
+                                FROM flights
+                                WHERE (fl_date BETWEEN '2019-12-25' AND '2019-12-31'OR fl_date BETWEEN '2019-01-01' AND '2019-01-07')
+                                AND arr_delay >= {min_arr_delay}
+                                AND arr_delay <= {max_arr_delay}
                              """)
     flight_numbers = pd.read_csv('../data/preprocessing/test_flight_numbers.csv')  
     #apply filters

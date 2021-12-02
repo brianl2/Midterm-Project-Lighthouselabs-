@@ -71,6 +71,7 @@ def get_pickle(index:int) -> sklearn.base.BaseEstimator:
     save_file.close()
     return p
 
+
 def get_records() -> pd.DataFrame:
     return pd.read_csv('../data/local/model_record.csv', index_col=0)
     
