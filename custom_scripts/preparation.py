@@ -111,24 +111,30 @@ def build_historic_average_features(flight_data: pd.DataFrame) -> pd.DataFrame:
     flight_data = flight_data.copy()
     all_features = NUMERIC_FEATURES.copy()
     all_features.append('op_carrier_fl_num')
+    ### TODO: Find better way of handling null values. (only test 124 samples currently effected by missing tail_num)
     fl_num_features  = [f for f in all_features if f in fl_num.columns]
-    flight_data = pd.merge(flight_data, fl_num[fl_num_features], on='op_carrier_fl_num')
+    flight_data = pd.merge(flight_data, fl_num[fl_num_features], how='left', on='op_carrier_fl_num')
+    flight_data[fl_num_features] =flight_data[fl_num_features].fillna(0)
     
     all_features.append('tail_num')
     tail_features  = [f for f in all_features if f in tail.columns]
-    flight_data = pd.merge(flight_data, tail[tail_features], on='tail_num')
+    flight_data = pd.merge(flight_data, tail[tail_features], how='left', on='tail_num')
+    flight_data[tail_features] =flight_data[tail_features].fillna(0)
     
     all_features.append('op_unique_carrier')
     carrier_features  = [f for f in all_features if f in carrier.columns]
-    flight_data = pd.merge(flight_data, carrier[carrier_features], on='op_unique_carrier')
+    flight_data = pd.merge(flight_data, carrier[carrier_features],how='left', on='op_unique_carrier')
+    flight_data[carrier_features] = flight_data[carrier_features].fillna(0)
     
     all_features.append('dest')
     dest_features  = [f for f in all_features if f in dest.columns]
-    flight_data = pd.merge(flight_data, dest[dest_features], on='dest')
+    flight_data = pd.merge(flight_data, dest[dest_features],how='left', on='dest')
+    flight_data[dest_features] = flight_data[dest_features].fillna(0)
     
     all_features.append('origin')
     origin_features  = [f for f in all_features if f in origin.columns]
-    flight_data = pd.merge(flight_data, origin[origin_features], on='origin')
+    flight_data = pd.merge(flight_data, origin[origin_features],how='left', on='origin')
+    flight_data[origin_features] = flight_data[origin_features].fillna(0)
     return flight_data
 
   
