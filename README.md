@@ -1,8 +1,11 @@
 # Welcome to our flight prediction midterm project
 
 # Files of note:
+- Final predictions are located in root folder.
+- Models used for final predictions are located in the final_models folder.
 
-# Model:
+# Models used:
+- Random Forest regression for predicting the small day to day variances in flight arrivals.
 
 
 # Training:
