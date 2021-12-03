@@ -5,6 +5,7 @@ Here, we attempt to predict flight arrival times using a flights dataset.
 # Files of note:
 - Final predictions are located in root folder.
 - Models used for final predictions are located in the final_models folder.
+- Presentation Slides for an overview of how we presented the models.
 
 # Models used:
 - Random Forest regression for predicting the small day to day variances in flight arrivals.
