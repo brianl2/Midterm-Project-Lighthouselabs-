@@ -1,4 +1,6 @@
 # Welcome to our flight prediction midterm project
+This is our Midterm Project with Lighthouse Labs Created by Owen Brush, Brian Lu and Amir Shakouri.
+Here, we attempt to predict flight arrival times using a flights dataset.
 
 # Files of note:
 - Final predictions are located in root folder.
@@ -6,6 +8,7 @@
 
 # Models used:
 - Random Forest regression for predicting the small day to day variances in flight arrivals.
+- Random Forest Classification for binary classification to predict whether a flight arriving will be on time/early or delayed.
 
 
 # Training:
