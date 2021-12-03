@@ -14,6 +14,7 @@ This decision came about through an analysis of the data that showed no decernab
 # Features:
 
 ![Alt text](/data/features.png?raw=true "Features")
+    The above image is a graph of the features our model is using, and their correlation with the arrival_delay.
 
 ##### arr_time_sin, arr_time_cos, dep_time_sin, dep_time_cos:
 - The sine and cosine of arrival time and departure time.
