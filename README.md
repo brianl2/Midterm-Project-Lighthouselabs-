@@ -15,25 +15,25 @@ This decision came about through an analysis of the data that showed no decernab
 
 ![Alt text](/data/features.png?raw=true "Features")
 
-### arr_time_sin, arr_time_cos, dep_time_sin, dep_time_cos:
+##### arr_time_sin, arr_time_cos, dep_time_sin, dep_time_cos:
 - The sine and cosine of arrival time and departure time.
-### fl_num_avg_arr_delay, fl_num_avg_dep_delay, fl_num_avg_late_aircraft_delay, fl_num_avg_taxi_out:
+##### fl_num_avg_arr_delay, fl_num_avg_dep_delay, fl_num_avg_late_aircraft_delay, fl_num_avg_taxi_out:
 - The historical average arrival delay, departure delay, late aircraft delay, and taxi out time for that flightpath.
-### tail_num_avg_arr_delay, tail_num_avg_dep_delay, tail_num_avg_late_aircraft_delay, tail_num_avg_taxi_out:
+##### tail_num_avg_arr_delay, tail_num_avg_dep_delay, tail_num_avg_late_aircraft_delay, tail_num_avg_taxi_out:
 - The historical average arrival delay, departure delay, late aircraft delay, and taxi out time for that that specific plane.
-### carrier_avg_arr_delay, carrier_avg_dep_delay, carrier_avg_carrier_delay, 
+##### carrier_avg_arr_delay, carrier_avg_dep_delay, carrier_avg_carrier_delay, 
 - The historical average arrival delay, departure delay, and carrier related delays for flights conducted by that carrier.
-### dest_avg_arr_delay, dest_avg_dep_delay, dest_avg_taxi_in:
+##### dest_avg_arr_delay, dest_avg_dep_delay, dest_avg_taxi_in:
 - The historical average arrival delay, departure delay, and taxi time for flights arriving at the destination airport.
-### origin_avg_arr_delay, origin_avg_dep_delay, origin_avg_taxi_out:
+##### origin_avg_arr_delay, origin_avg_dep_delay, origin_avg_taxi_out:
 - The historical average arrival delay, departure delay, and taxi time for flights departing from the origin airport.
-### distance:
+##### distance:
 - The distance of the flight
-### crs_elapsed_time
+##### crs_elapsed_time
 - The scheduled duration of the flight
-### origin_cold, origin_fog, origin_hail, origin_rain, origin_snow,origin_storm:
+##### origin_cold, origin_fog, origin_hail, origin_rain, origin_snow,origin_storm:
 - The severity of weather at the origin airport on the day of the flight
-### dest_cold, dest_fog, dest_hail, dest_rain, dest_snow, dest_storm:
+##### dest_cold, dest_fog, dest_hail, dest_rain, dest_snow, dest_storm:
 - The severity of weather at the destination airport on the day of the flight
-### day_of_week:
+##### day_of_week:
 - The day of the week, Monday through to Sunday.
