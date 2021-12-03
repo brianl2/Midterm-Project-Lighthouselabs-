@@ -1,8 +1,8 @@
 # Welcome to our flight prediction midterm project
 
-# --- info about main files in root directory ---
+# Files of note:
 
-# --- our chosen model ---
+# Model:
 
 
 # Training:
